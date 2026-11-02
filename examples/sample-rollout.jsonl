@@ -1,0 +1,4 @@
+{"type":"event_msg","payload":{"type":"task_started"}}
+{"type":"event_msg","payload":{"type":"user_message","message":"I am building a reading journal. Can we group my notes by topic and export each group to Markdown?"}}
+{"type":"event_msg","payload":{"type":"agent_message","phase":"final_answer","message":"Keep three fields for each note: title, topic, and excerpt. Read the notes, group them by topic, and write a Markdown file for each group."}}
+{"type":"event_msg","payload":{"type":"task_complete"}}

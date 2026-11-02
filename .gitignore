@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+.relay/
+relay.sqlite3*
+rollout-*.jsonl
+debug.log
+__pycache__/
+*.py[cod]
+.venv/
+dist/
+build/
+*.spec
+output/
+.playwright-cli/
+.DS_Store
+Thumbs.db
