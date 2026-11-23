@@ -50,7 +50,7 @@ class RateRecoveryTests(unittest.TestCase):
         stream = io.BytesIO("".join("data: " + json.dumps(e) + "\n\n" for e in events).encode())
         recorded, emitted = [], []
         with tempfile.TemporaryDirectory() as root:
-            project = ProjectFiles(root, "edit", stop, threading.Lock())
+            project = ProjectFiles(Path(root).resolve(), "edit", stop, threading.Lock())
             turn = harness.Turn(stop, project)
             with patch.object(stop, "_connect", return_value=sock), patch.object(stop, "wait", return_value=False), \
                     patch("urllib.request.urlopen", side_effect=[rejected, stream]) as https:
@@ -130,7 +130,7 @@ class RateRecoveryTests(unittest.TestCase):
                 yield "end", {"status": "done", "text": "Done."}
         with tempfile.TemporaryDirectory() as root:
             stop = threading.Event()
-            project = ProjectFiles(root, "edit", stop, threading.Lock())
+            project = ProjectFiles(Path(root).resolve(), "edit", stop, threading.Lock())
             turn = harness.Turn(stop, project)
             with patch.object(stop, "wait", return_value=False):
                 turn.send(upstream, "fixture", task(), lambda *a, **kw: None, lambda _: True, lambda _: None)
@@ -231,7 +231,7 @@ class RateRecoveryTests(unittest.TestCase):
                 yield "end", {"status": "done", "output_items": [write]}
         with tempfile.TemporaryDirectory() as root:
             stop = threading.Event()
-            project = ProjectFiles(root, "edit", stop, threading.Lock(), auto_review=True)
+            project = ProjectFiles(Path(root).resolve(), "edit", stop, threading.Lock(), auto_review=True)
             turn = harness.Turn(stop, project)
             with patch.object(stop, "wait", return_value=False):
                 turn.send(upstream, "fixture", task(), lambda *a, **kw: None,

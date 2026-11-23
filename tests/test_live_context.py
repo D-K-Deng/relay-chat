@@ -100,7 +100,7 @@ class LiveRuns(unittest.TestCase):
             control.steer("No file changes")
             return False
         with tempfile.TemporaryDirectory() as folder:
-            project = ProjectFiles(folder, "edit", threading.Event(), threading.Lock())
+            project = ProjectFiles(Path(folder).resolve(), "edit", threading.Event(), threading.Lock())
             result, sent, _ = self.run_live(upstream, project=project, review=decline)
             self.assertFalse((Path(folder) / "hello.txt").exists())
         self.assertEqual(result["steers"][0]["status"], "applied")
@@ -122,7 +122,7 @@ class LiveRuns(unittest.TestCase):
                     {"type": "response.output_item.done", "item": call}, complete([call])]
         with tempfile.TemporaryDirectory() as folder:
             (Path(folder) / "notes.txt").write_text("fixture text")
-            project = ProjectFiles(folder, "read", threading.Event(), threading.Lock())
+            project = ProjectFiles(Path(folder).resolve(), "read", threading.Event(), threading.Lock())
             result, sent, charged = self.run_live(upstream, project=project, effort="ultra")
         self.assertEqual(result["text"], "Read it.")
         self.assertEqual(len(result["workspace_activity"]), 1)
@@ -153,7 +153,7 @@ class LiveRuns(unittest.TestCase):
             return [{"type": "response.created", "response": {"id": "first"}},
                     {"type": "response.output_item.done", "item": call}, complete([call], tokens=36)]
         with tempfile.TemporaryDirectory() as folder:
-            project = ProjectFiles(folder, "read", threading.Event(), threading.Lock())
+            project = ProjectFiles(Path(folder).resolve(), "read", threading.Event(), threading.Lock())
             result, _, charges = self.run_live(upstream, project=project, effort="ultra")
         self.assertEqual(result["status"], "error")
         self.assertIn("Invalid result.", result["note"])
@@ -174,7 +174,7 @@ class LiveRuns(unittest.TestCase):
                     {"type": "response.output_item.done", "item": call}, complete([call])]
         for effort in ("auto", "ultra"):
             with self.subTest(effort=effort), tempfile.TemporaryDirectory() as folder:
-                project = ProjectFiles(folder, "edit", threading.Event(), threading.Lock())
+                project = ProjectFiles(Path(folder).resolve(), "edit", threading.Event(), threading.Lock())
                 stream = io.BytesIO(("data: " + json.dumps(complete([answer("Finished.")])) + "\n\n").encode())
                 with patch("urllib.request.urlopen", return_value=stream) as http:
                     result, _, charges = self.run_live(upstream, project=project, review=lambda *_: True, effort=effort)

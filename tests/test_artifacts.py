@@ -53,7 +53,7 @@ def legacy_report(store, report):
 class ChatFiles(unittest.TestCase):
     def setUp(self):
         stack = self.enterContext(ExitStack())
-        self.home = Path(stack.enter_context(tempfile.TemporaryDirectory()))
+        self.home = Path(stack.enter_context(tempfile.TemporaryDirectory())).resolve()
         self.calls = []
 
         def fixture(key, body, stopped):
