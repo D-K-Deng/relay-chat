@@ -72,7 +72,8 @@ def smoke(archive, work):
     if sys.platform == "darwin":
         # LaunchServices may run the app away from its original setup folder.
         app = (folder / "RelayChat.app").rename(work / "RelayChat.app")
-        command = ["/usr/bin/open", "-n", "-W", "--env", "RELAY_DATA_DIR=" + str(data), "--env", "OPENAI_API_KEY=",
+        command = ["/usr/bin/open", "-n", "-W", "--stderr", str(work / "desktop-stderr.log"),
+                   "--env", "RELAY_DATA_DIR=" + str(data), "--env", "OPENAI_API_KEY=",
                    "-a", str(app), "--args", *args]
     else:
         command = [str(setup), *args]
@@ -96,4 +97,11 @@ def smoke(archive, work):
 
 if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as temporary:
-        smoke(Path(sys.argv[1]).resolve(), Path(temporary))
+        work = Path(temporary)
+        try:
+            smoke(Path(sys.argv[1]).resolve(), work)
+        except Exception:
+            log = work / "desktop-stderr.log"
+            if log.is_file():
+                print(log.read_text(errors="replace"), file=sys.stderr)
+            raise
