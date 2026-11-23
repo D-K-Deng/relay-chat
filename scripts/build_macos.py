@@ -14,6 +14,9 @@ from pathlib import Path
 from release_files import GUIDES
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from relay.config import APP_VERSION
+
 CACHE = ROOT / "build/macos-cache"
 DIST = ROOT / "dist"
 RELEASE = "20261026"
@@ -67,7 +70,19 @@ def add_runtime(archive, source):
                     add(archive, name, stream.read(), stat.S_IFREG | member.mode)
 
 
-def package(arch, launcher):
+def webkit_wheels():
+    destination = CACHE / "webkit-wheels"
+    destination.mkdir(exist_ok=True)
+    # PyObjC publishes universal wheels. Install only the Cocoa and WebKit bindings.
+    subprocess.run([sys.executable, "-m", "pip", "download", "--only-binary=:all:",
+                    "--platform", "macosx_13_0_universal2", "--python-version", "3.12",
+                    "--implementation", "cp", "--abi", "cp312", "--dest", str(destination),
+                    "pyobjc-core==13.0", "pyobjc-framework-Cocoa==13.0", "pyobjc-framework-WebKit==13.0",
+                    "websocket-client==1.9.0"], check=True)
+    return sorted(destination.glob("*-13.0-*.whl")) + list(destination.glob("websocket_client-1.9.0-*.whl"))
+
+
+def package(arch, launcher, wheels):
     target, label = TARGETS[arch]
     source = runtime_archive(target)
     info = {
@@ -75,8 +90,10 @@ def package(arch, launcher):
         "CFBundleInfoDictionaryVersion": "6.0",
         "CFBundleIdentifier": "local.relaychat.desktop", "CFBundleName": "RelayChat",
         "CFBundleDisplayName": "Relay Chat", "CFBundleExecutable": "RelayChat",
-        "CFBundleIconFile": "relay.icns", "CFBundleShortVersionString": "1.1.0",
-        "CFBundleVersion": "2", "LSMinimumSystemVersion": "11.0", "LSUIElement": True,
+        "CFBundleIconFile": "relay.icns", "CFBundleShortVersionString": APP_VERSION,
+        "CFBundleVersion": "4", "LSMinimumSystemVersion": "13.0",
+        "NSMicrophoneUsageDescription": "Relay records your voice when you dictate and sends the clip to OpenAI to transcribe your draft.",
+        "NSAppTransportSecurity": {"NSAllowsLocalNetworking": True},
         "NSHighResolutionCapable": True,
     }
     output = DIST / f"RelayChat-macOS-{label}.zip"
@@ -94,6 +111,12 @@ def package(arch, launcher):
             for path in sorted(ROOT.glob(pattern)):
                 add(archive, CONTENTS + "Resources/app/" + path.relative_to(ROOT).as_posix(), path.read_bytes())
         add_runtime(archive, source)
+        for wheel in wheels:
+            with zipfile.ZipFile(wheel) as modules:
+                for entry in modules.infolist():
+                    if not entry.is_dir() and ".dSYM/" not in entry.filename:
+                        add(archive, CONTENTS + "Resources/runtime/lib/python3.12/site-packages/" + entry.filename,
+                            modules.read(entry))
     building.replace(output)
     print(output, flush=True)
 
@@ -105,5 +128,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     CACHE.mkdir(parents=True, exist_ok=True)
     DIST.mkdir(exist_ok=True)
+    wheels = webkit_wheels()
     for arch in ([args.arch] if args.arch else TARGETS):
-        package(arch, build_launcher(arch, args.zig))
+        package(arch, build_launcher(arch, args.zig), wheels)

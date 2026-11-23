@@ -1,10 +1,12 @@
 /* Finder entry point. The interpreter and the Relay source live inside the app. */
 #include <libgen.h>
+#include <dlfcn.h>
 #include <mach-o/dyld.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <wchar.h>
 
 int main(int argc, char **argv) {
     uint32_t length = 0;
@@ -13,8 +15,10 @@ int main(int argc, char **argv) {
     if (_NSGetExecutablePath(self, &length) != 0) return 1;
 
     char *directory = dirname(self);
-    char *python, *script;
-    asprintf(&python, "%s/../Resources/runtime/bin/python3.12", directory);
+    char *runtime, *library, *python, *script;
+    asprintf(&runtime, "%s/../Resources/runtime", directory);
+    asprintf(&library, "%s/lib/libpython3.12.dylib", runtime);
+    asprintf(&python, "%s/bin/python3.12", runtime);
     asprintf(&script, "%s/../Resources/app/app.py", directory);
     if (!getenv("SSL_CERT_FILE")) {
         char *certs = "/etc/ssl/cert.pem";
@@ -34,14 +38,12 @@ int main(int argc, char **argv) {
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "-psn_", 5) != 0) args[count++] = argv[i];
     }
-    /* Release Finder's application instance. Opening it again can reopen the window. */
-    if (count == 5) {
-        pid_t child = fork();
-        if (child < 0) { perror("RelayChat"); return 1; }
-        if (child > 0) return 0;
-        setsid();
-    }
-    execv(python, args);
-    perror("RelayChat");
-    return 1;
+    /* Keep Finder's bundle identity and Dock icon while running the embedded Python. */
+    void *lib = dlopen(library, RTLD_NOW | RTLD_GLOBAL);
+    if (!lib) { fprintf(stderr, "%s\n", dlerror()); return 1; }
+    wchar_t *(*decode)(const char *, size_t *) = dlsym(lib, "Py_DecodeLocale");
+    void (*set_home)(const wchar_t *) = dlsym(lib, "Py_SetPythonHome");
+    int (*run)(int, char **) = dlsym(lib, "Py_BytesMain");
+    set_home(decode(runtime, NULL));
+    return run(count, args);
 }

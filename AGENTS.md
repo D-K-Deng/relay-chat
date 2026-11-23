@@ -4,4 +4,4 @@ Read README.md and web/prompt.txt when someone asks you to configure Relay on th
 
 Keep API keys in the local environment or the ignored .env.local file. Keep private conversations, Codex sessions, and build outputs outside Git. Both saved and temporary chats use the Responses API with store set to false.
 
-Use English for the interface, documentation, examples, screenshots, and releases. Preserve the language of users' messages and imported conversations. Prefer the Python standard library and the existing static frontend. Keep changes proportional to the problem.
+Keep the interface available in English and Simplified Chinese. Use English for documentation, examples, and release notes. Preserve the language of users' messages and imported conversations. Prefer the Python standard library and the existing static frontend. Keep changes proportional to the problem.

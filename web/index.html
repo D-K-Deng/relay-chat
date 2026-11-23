@@ -3,36 +3,39 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark"><meta name="theme-color" content="#f8f9f5">
-  <title>Relay Chat | Local AI workspace</title>
+  <title data-zh="Relay Chat | 本地 AI 工作区">Relay Chat | Local AI workspace</title>
   <link rel="icon" type="image/svg+xml" href="/mark.svg"><link rel="stylesheet" href="/app.css">
+  <link rel="stylesheet" href="/artifacts.css"><link rel="stylesheet" href="/dictation.css">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
 <div id="layout">
-  <button class="scrim" id="scrim" aria-label="Close navigation"></button>
+  <button class="scrim" id="scrim" data-zh-aria-label="关闭导航" aria-label="Close navigation"></button>
   <aside id="sidebar">
-    <div class="brand"><img src="/mark.svg" alt=""><div><strong>Relay<span>Chat</span></strong><small>Your AI workspace</small></div></div>
+    <div class="brand"><img src="/mark.svg" alt=""><div><strong>Relay<span>Chat</span></strong><small data-zh="你的 AI 工作区">Your AI workspace</small></div></div>
     <div class="side-actions">
-      <button class="primary nav-new" data-action="new"><i data-i="plus"></i><span>New chat</span><kbd>⌘ / Ctrl O</kbd></button>
-      <button class="nav-link" data-action="temp" id="nav-temp"><i data-i="temp"></i><span>Temporary chat</span></button>
-      <button class="nav-link" data-action="import"><i data-i="branch"></i><span>Continue from Codex</span></button>
+      <button class="primary nav-new" data-action="new"><i data-i="plus"></i><span data-zh="新建聊天">New chat</span><kbd>⌘ / Ctrl O</kbd></button>
+      <button class="nav-link" data-action="temp" id="nav-temp"><i data-i="temp"></i><span data-zh="临时聊天">Temporary chat</span></button>
+      <button class="nav-link" data-action="import"><i data-i="branch"></i><span data-zh="从 Codex 继续">Continue from Codex</span></button>
     </div>
-    <div class="history-top"><span>Chat history</span><button class="icon-btn small" id="search-open" title="Search chats (Ctrl / Cmd K)" aria-label="Search chats"><i data-i="search"></i></button></div>
-    <div id="search-wrap" hidden><input id="history-search" type="search" aria-label="Search titles or messages" placeholder="Search titles or messages…"></div>
-    <div id="history" aria-label="Chat history"></div>
+    <div class="history-top"><span data-zh="聊天记录">Chat history</span><button class="icon-btn small" id="search-open" data-zh-title="搜索聊天（Ctrl / Cmd K）" data-zh-aria-label="搜索聊天" title="Search chats (Ctrl / Cmd K)" aria-label="Search chats"><i data-i="search"></i></button></div>
+    <div id="search-wrap" hidden><input id="history-search" data-zh-aria-label="搜索标题或消息" data-zh-placeholder="搜索标题或消息…" type="search" aria-label="Search titles or messages" placeholder="Search titles or messages…"></div>
+    <div id="history" data-zh-aria-label="聊天记录" aria-label="Chat history"></div>
+    <section id="agent-nav" hidden><h2 data-zh="子智能体">Subagents</h2><div class="agent-nav-list"></div></section>
     <div class="side-foot">
-      <button class="nav-link" data-action="guide"><i data-i="book"></i><span>Setup guide</span><i data-i="chevron"></i></button>
-      <button class="nav-link" data-action="settings"><i data-i="sliders"></i><span>Settings</span></button>
-      <div class="local-label"><span class="live-dot"></span> Local workspace <b>RELAY 1.1</b></div>
+      <button class="nav-link" data-action="guide"><i data-i="book"></i><span data-zh="设置指南">Setup guide</span><i data-i="chevron"></i></button>
+      <button class="nav-link" data-action="settings"><i data-i="sliders"></i><span data-zh="设置">Settings</span></button>
+      <div class="local-label"><span class="live-dot"></span> <span data-zh="本地工作区">Local workspace</span> <b id="relay-version"></b></div>
     </div>
   </aside>
   <main id="main">
     <header class="topbar">
-      <button class="icon-btn" id="toggle-side" title="Toggle sidebar" aria-label="Toggle sidebar"><i data-i="panel"></i></button>
-      <div class="crumb"><span>Workspace</span><b>/</b><strong id="crumb">New chat</strong></div>
-      <button id="balance-pill" class="balance-pill" data-action="balance" aria-label="API balance"><i data-i="wallet"></i><b>API balance</b></button>
+      <button class="icon-btn" id="toggle-side" data-zh-title="显示或收起侧栏" data-zh-aria-label="显示或收起侧栏" title="Toggle sidebar" aria-label="Toggle sidebar"><i data-i="panel"></i></button>
+      <div class="crumb"><span data-zh="工作区">Workspace</span><b>/</b><strong id="crumb">New chat</strong></div>
+      <button id="balance-pill" data-zh-aria-label="API 余额" class="balance-pill" data-action="balance" aria-label="API balance"><i data-i="wallet"></i><b>API balance</b></button>
       <button id="connection" class="connection" data-action="guide"><span></span><b>Checking key</b></button>
-      <button id="more" class="icon-btn" data-action="manage" title="Manage chat" aria-label="Manage chat" hidden><i data-i="more"></i></button>
+      <button class="icon-btn" type="button" data-chat-files aria-label="Chat files" title="Chat files"><i data-i="folder"></i></button>
+      <button id="more" data-zh-title="管理聊天" data-zh-aria-label="管理聊天" class="icon-btn" data-action="manage" title="Manage chat" aria-label="Manage chat" hidden><i data-i="more"></i></button>
     </header>
     <div id="stage" class="stage empty">
       <div id="thread" class="thread" hidden><div class="thread-inner" id="messages"></div></div>
@@ -55,25 +58,59 @@
       <div id="compose-block" class="compose-block">
         <div id="composer" class="composer">
           <div id="chips" class="chips"></div>
-          <textarea id="draft" rows="2" aria-label="Message" placeholder="Ask a question or drop a file here…" autofocus></textarea>
+          <textarea id="draft" rows="2" aria-label="Message" data-zh-aria-label="消息" placeholder="Ask a question or drop a file here…" autofocus></textarea>
+          <span id="dictation-status" role="status"></span>
           <div class="compose-tools">
-            <button id="attach" class="icon-btn attach" title="Attach text or an image" aria-label="Add an attachment"><i data-i="plus"></i></button>
-            <span class="tool-divider"></span>
-            <button id="model" class="model" data-action="settings" title="Model and context settings"><i data-i="layers"></i><span>gpt-5.4-mini</span><i data-i="down"></i></button>
-            <span class="enter-hint">Shift + Enter for a new line</span>
-            <button id="send" class="send" aria-label="Send message" title="Send message" disabled><i data-i="up"></i></button>
+            <button id="attach" type="button" class="icon-btn attach" title="Attach a file" data-zh-title="添加附件" aria-label="Add an attachment" data-zh-aria-label="添加附件"><i data-i="plus"></i></button>
+            <div class="compose-popup">
+              <button id="tools-toggle" type="button" class="toolbar-trigger" aria-haspopup="dialog" aria-controls="tools-menu" aria-expanded="false" aria-label="Chat tools" data-zh-aria-label="聊天工具" title="Chat tools" data-zh-title="聊天工具"><i data-i="sliders"></i><span data-zh="工具">Tools</span><i data-i="down"></i></button>
+              <div id="tools-menu" class="composer-menu" role="dialog" aria-labelledby="tools-title" hidden>
+                <h2 id="tools-title" data-zh="聊天工具">Chat tools</h2>
+                <button id="web-search" type="button" class="menu-row" aria-pressed="false" disabled><i data-i="globe"></i><span data-zh="联网搜索">Web search</span></button>
+                <button id="auto-review" type="button" class="menu-row" aria-pressed="true"><i data-i="check"></i><span data-zh="自动审阅">Auto Review</span></button>
+                <button id="terminal-commands" type="button" class="menu-row" aria-pressed="true"><span aria-hidden="true" class="terminal-glyph">›_</span><span data-zh="终端命令">Terminal commands</span></button>
+                <div class="menu-divider"></div>
+                <button id="workspace" type="button" class="menu-row workspace-trigger" aria-haspopup="dialog"><i data-i="folder"></i><span>Chat folder</span><i data-i="chevron"></i></button>
+              </div>
+            </div>
+            <div class="compose-popup response-controls">
+              <button id="response-settings" type="button" class="toolbar-trigger" aria-haspopup="dialog" aria-controls="response-menu" aria-expanded="false" title="Response settings"><span class="model-name">Model</span><span class="effort-summary"></span><span class="speed-indicator" aria-hidden="true" hidden></span><i data-i="down"></i></button>
+              <div id="response-menu" class="composer-menu" role="dialog" aria-labelledby="response-title" hidden>
+                <div id="response-overview">
+                  <div class="menu-heading"><h2 id="response-title" data-zh="回复设置">Response settings</h2><button id="refresh-models" class="icon-btn refresh-models" type="button" title="Refresh available models" data-zh-title="刷新可用模型" aria-label="Refresh available models" data-zh-aria-label="刷新可用模型" disabled><i data-i="refresh"></i></button></div>
+                  <button id="model" type="button" class="menu-row" disabled><span data-zh="模型">Model</span><span class="choice-value">Checking API…</span><i data-i="chevron"></i></button>
+                  <button id="effort" type="button" class="menu-row" disabled><span data-zh="推理强度">Reasoning effort</span><span class="choice-value">Auto</span><i data-i="chevron"></i></button>
+                  <button id="service-tier" type="button" class="menu-row" disabled><span data-zh="速度">Speed</span><span class="choice-value">Standard</span><i data-i="chevron"></i></button>
+                </div>
+                <div id="choice-menu" hidden>
+                  <div class="menu-heading picker-heading"><button id="choice-back" class="icon-btn" type="button" aria-label="Back to response settings" data-zh-aria-label="返回回复设置" title="Back" data-zh-title="返回"><i data-i="back"></i></button><h2 id="choice-title"></h2></div>
+                  <label class="choice-search" hidden><i data-i="search"></i><input id="model-search" type="search" placeholder="Filter models" data-zh-placeholder="筛选模型" aria-label="Filter models" data-zh-aria-label="筛选模型" autocomplete="off"></label>
+                  <div id="choice-options" class="choice-options"></div>
+                </div>
+              </div>
+            </div>
+            <button id="dictate" type="button" class="icon-btn attach" aria-label="Hold to dictate" data-zh-aria-label="按住听写" title="Hold to dictate"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3m-3 0h6"/></svg></button>
+            <button id="steer" class="toolbar-trigger" type="button" title="Send update" data-zh-title="发送补充指令" aria-label="Send update" data-zh-aria-label="发送补充指令" hidden><i data-i="arrow"></i><span data-zh="补充指令">Send update</span></button>
+            <button id="send" class="send" type="button" aria-label="Send message" title="Send message" disabled><i data-i="up"></i></button>
           </div>
+          <p id="model-status" class="model-status" role="status"></p>
           <input id="files" type="file" multiple hidden>
         </div>
-        <div class="compose-note" id="compose-note"><i data-i="lock"></i><span>Saved on this device · Uses your OpenAI API credits</span></div>
+        <div class="compose-note" id="compose-note"><i data-i="lock"></i><span>Saved on this device · Uses your OpenAI API credits</span><span id="context-usage" hidden></span></div>
       </div>
       <div id="shortcuts" class="shortcuts">
-        <button class="action-card" data-action="import"><span class="card-icon green"><i data-i="branch"></i></span><span><strong>Continue from Codex</strong><small>Bring in an earlier conversation</small></span><i data-i="arrow"></i></button>
-        <button class="action-card" id="second-card" data-action="temp"><span class="card-icon clay"><i data-i="temp"></i></span><span><strong>Temporary chat</strong><small>Clears when you close this tab</small></span><i data-i="arrow"></i></button>
+        <button class="action-card" data-action="import"><span class="card-icon green"><i data-i="branch"></i></span><span><strong data-zh="从 Codex 继续">Continue from Codex</strong><small data-zh="导入之前的对话">Bring in an earlier conversation</small></span><i data-i="arrow"></i></button>
+        <button class="action-card" id="second-card" data-action="temp"><span class="card-icon clay"><i data-i="temp"></i></span><span><strong>Temporary chat</strong><small>Clears when you close the window</small></span><i data-i="arrow"></i></button>
       </div>
     </div>
   </main>
+  <aside id="agent-panel" aria-labelledby="agent-panel-title" hidden>
+    <header><h2 id="agent-panel-title" data-zh="子智能体活动">Subagent activity</h2><button class="icon-btn" type="button" data-close-agents aria-label="Close activity" data-zh-aria-label="关闭活动面板"><i data-i="x"></i></button></header>
+    <div class="agent-selection"><select aria-label="Subagent" data-zh-aria-label="子智能体"></select><small class="agent-state"></small></div>
+    <div class="agent-stream" tabindex="0" aria-label="Activity" data-zh-aria-label="活动记录"></div>
+    <p class="agent-empty"></p>
+  </aside>
 </div>
-<dialog id="dialog" aria-labelledby="modal-title"><div class="modal-head"><div><div id="modal-kicker" class="eyebrow"></div><h2 id="modal-title"></h2></div><button id="close-modal" class="icon-btn" aria-label="Close dialog" title="Close"><i data-i="x"></i></button></div><div id="modal-body"></div></dialog>
+<dialog id="dialog" aria-labelledby="modal-title"><div class="modal-head"><div><div id="modal-kicker" class="eyebrow"></div><h2 id="modal-title"></h2></div><button id="close-modal" data-zh-title="关闭" data-zh-aria-label="关闭对话框" class="icon-btn" aria-label="Close dialog" title="Close"><i data-i="x"></i></button></div><div id="modal-body"></div></dialog>
 <div id="toast" role="status"></div>
 </body></html>

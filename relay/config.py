@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 
+APP_VERSION = "1.2.0"
 ROOT = Path(sys.executable).parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parents[1]
 if getattr(sys, "frozen", False) and ROOT.name == "dist" and (ROOT.parent / "app.py").is_file():
     ROOT = ROOT.parent

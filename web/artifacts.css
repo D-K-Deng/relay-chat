@@ -1,0 +1,18 @@
+.artifact-cards { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 10px; }
+.artifact-link { color: var(--green); text-decoration: underline; font: inherit; }
+.artifact-card, .artifact-error {
+  display: inline-flex; align-items: center; gap: 9px; min-width: 0; max-width: 100%;
+  padding: 9px 12px; border: 1px solid var(--line); border-radius: 9px; text-align: left;
+}
+.artifact-card:hover { background: var(--hover); }
+.artifact-cards strong, .artifact-cards small { display: block; overflow-wrap: anywhere; }
+.artifact-cards strong { color: var(--ink); font-size: 13px; }
+.artifact-cards small, .artifact-preview small { color: var(--muted); font-size: 11px; }
+.artifact-card > .ico, .artifact-error > .ico { flex: none; width: 16px; }
+.artifact-card > .ico:last-child { width: 11px; color: var(--muted); }
+.artifact-preview { overflow: auto; max-height: 55vh; margin-block: 10px 18px; font-size: 13px; }
+.artifact-preview img { display: block; max-width: 100%; max-height: 53vh; object-fit: contain; }
+.artifact-preview pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.artifact-preview table { border-collapse: collapse; margin-top: 7px; }
+.artifact-preview td { padding: 5px 8px; border: 1px solid var(--line); white-space: pre; }
+.artifact-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }

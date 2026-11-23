@@ -1,0 +1,5 @@
+#dictate { touch-action: none; user-select: none; -webkit-user-select: none; }
+#dictate[data-recording] { color: var(--card); background: var(--green); border-color: var(--green); }
+#dictation-status { display: block; color: var(--muted); font-size: 12px; margin: 0 4px 8px; }
+#dictation-status:empty { display: none; }
+#dictation-status button { color: var(--green); text-decoration: underline; padding-inline: 4px; }
