@@ -5,7 +5,6 @@ from urllib.parse import urlsplit
 
 import AppKit as A
 import WebKit as W
-import objc
 from Foundation import NSRunLoop, NSTimer, NSURL, NSURLRequest
 from PyObjCTools import AppHelper
 
@@ -39,10 +38,9 @@ def wait_for_exit(text, cancel, still_running):
         timer.invalidate()
 
 
-class WindowDelegate(A.NSObject, protocols=[
-    objc.protocolNamed("WKNavigationDelegate"), objc.protocolNamed("WKUIDelegate"),
-    objc.protocolNamed("WKDownloadDelegate"), objc.protocolNamed("NSWindowDelegate"), objc.protocolNamed("WKScriptMessageHandler"),
-]):
+# WebKit registers delegate signatures on NSObject. Let PyObjC bind them when
+# creating the class so decision and completion blocks retain their argument types.
+class WindowDelegate(A.NSObject):
     def userContentController_didReceiveScriptMessage_(self, controller, message):
         self.chinese = message.body() == "zh-CN"
         set_main_menu(self.chinese)

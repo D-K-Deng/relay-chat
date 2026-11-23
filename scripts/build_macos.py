@@ -91,7 +91,7 @@ def package(arch, launcher, wheels):
         "CFBundleIdentifier": "local.relaychat.desktop", "CFBundleName": "RelayChat",
         "CFBundleDisplayName": "Relay Chat", "CFBundleExecutable": "RelayChat",
         "CFBundleIconFile": "relay.icns", "CFBundleShortVersionString": APP_VERSION,
-        "CFBundleVersion": "5", "LSMinimumSystemVersion": "13.0",
+        "CFBundleVersion": "6", "LSMinimumSystemVersion": "13.0",
         "NSMicrophoneUsageDescription": "Relay records your voice when you dictate and sends the clip to OpenAI to transcribe your draft.",
         "NSAppTransportSecurity": {"NSAllowsLocalNetworking": True},
         "NSHighResolutionCapable": True,
